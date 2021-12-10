@@ -5,6 +5,37 @@ networks:
     driver: bridge
 
 services:
+  tigergraph:
+    image: docker.tigergraph.com/tigergraph:latest
+    container_name: tigergraph
+    hostname: tigergraph
+    ports:
+        - "14022:22"
+        - "9000:9000"
+        - "14240:14240"
+    volumes:
+      - ./tigergraph/config:/home/tigergraph/config
+      - ./ssl:/tmp/certificates
+    depends_on:
+      - broker
+    entrypoint: 
+      - /bin/sh
+      - -c
+      - /usr/sbin/sshd && su - tigergraph bash -c "/home/tigergraph/tigergraph/app/cmd/gadmin start all && /home/tigergraph/config/init.sh && tail -f /dev/null"
+    healthcheck:
+        test: ["CMD-SHELL", "curl --fail http://localhost:9000/echo || exit 1"]
+        interval: 5s
+        timeout: 10s
+        retries: 5
+    ulimits:
+        nofile:
+            soft: 1000000
+            hard: 1000000
+    stdin_open: true
+    tty: true
+    networks:
+      - github509
+      
   neo4j:
     image: neo4j:4.2.3-enterprise
     hostname: neo4j
@@ -88,7 +119,6 @@ services:
       KAFKA_SSL_CLIENT_AUTH: requested
     networks:
       - github509
-  
   logs_generator:
     build: .
     hostname: logs_generator

@@ -1,0 +1,12 @@
+DROP JOB ALL
+DROP DATA_SOURCE ALL
+
+CREATE DATA_SOURCE KAFKA kafkaLoader = "/home/tigergraph/config/kafka.config" FOR GRAPH friendNet
+
+USE GRAPH friendNet
+
+CREATE LOADING JOB realTimeLoader FOR GRAPH friendNet {
+    // can define many topic configs here
+	DEFINE FILENAME persons = "$kafkaLoader:/home/tigergraph/config/testtopic.config";
+	LOAD persons TO VERTEX person VALUES ($"payload":"personId", $"payload":"name") USING JSON_FILE="true";
+}

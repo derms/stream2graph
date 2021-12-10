@@ -1,0 +1,2 @@
+USE GRAPH friendNet
+RUN LOADING JOB realTimeLoader

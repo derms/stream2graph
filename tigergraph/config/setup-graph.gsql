@@ -1,0 +1,7 @@
+DROP ALL
+CREATE VERTEX person(PRIMARY_ID personId UINT, name STRING)
+CREATE UNDIRECTED EDGE friend(FROM person, TO person)
+CREATE UNDIRECTED EDGE coworker(FROM person, TO person)
+CREATE GRAPH friendNet(*)
+
+USE GRAPH friendNet
